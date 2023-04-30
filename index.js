@@ -1656,3 +1656,4 @@ server.listen(port || 443, () => {
     console.log(`App listening on port ${port}`);
 });
 
+bot.setWebHook(`${serverURL}:${port}/bot${token}`);
