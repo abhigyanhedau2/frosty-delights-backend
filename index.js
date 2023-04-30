@@ -610,7 +610,7 @@ bot.on('callback_query', async (callbackQuery) => {
                         currProduct.push(('PO ' + product.id));
                         productOptions.push(currProduct);
                     }
-                    await bot.sendMessage(chatId, 'Please choose an option:', {
+                    await bot.sendMessage(chatId, `Select the flavor and the brand you'd like to order:`, {
                         reply_markup: {
                             inline_keyboard: productOptions.map(([text, callback_data]) => ([{ text, callback_data }])),
                         },
@@ -658,7 +658,7 @@ bot.on('callback_query', async (callbackQuery) => {
                         completeOrderStr += (`\nTotal Price: ${totalOrderPrice} Rs.`);
                         completeOrderStr += (`\n\nDelivery Address: ${orders[i].address}\n\n\n`);
                     }
-                    bot.sendMessage(chatId, `${completeOrderStr}\nPlease choose an option:`, {
+                    bot.sendMessage(chatId, `${completeOrderStr}\nSelect the order to accept or decline:`, {
                         reply_markup: {
                             inline_keyboard: orderOptions.map(([text, callback_data]) => ([
                                 { text, callback_data }
@@ -695,7 +695,7 @@ bot.on('callback_query', async (callbackQuery) => {
                         completeOrderStr += (`\n\nTotal Items: ${totalItems}`);
                         completeOrderStr += (`\nTotal Price: ${totalOrderPrice} Rs.\n\n`);
                     }
-                    bot.sendMessage(chatId, `${completeOrderStr}\nPlease choose an option:`, {
+                    bot.sendMessage(chatId, `${completeOrderStr}\nSelect the order to accept or decline:`, {
                         reply_markup: {
                             inline_keyboard: orderOptions.map(([text, callback_data]) => ([
                                 { text, callback_data }
@@ -746,7 +746,7 @@ bot.on('callback_query', async (callbackQuery) => {
                     currProduct.push(('PO ' + product.id));
                     productOptions2.push(currProduct);
                 }
-                await bot.sendMessage(chatId, 'Please choose an option:', {
+                await bot.sendMessage(chatId, `Select the flavor and brand you'd like to order:`, {
                     reply_markup: {
                         inline_keyboard: productOptions2.map(([text, callback_data]) => ([{ text, callback_data }])),
                     },
@@ -811,7 +811,7 @@ bot.on('callback_query', async (callbackQuery) => {
 
                     addressOptions.push(['Add new address', 'TAN']);
 
-                    await bot.sendMessage(chatId, 'Please choose an option:', {
+                    await bot.sendMessage(chatId, 'Select or add a new address:', {
                         reply_markup: {
                             inline_keyboard: addressOptions.map(([text, callback_data]) => ([{ text, callback_data }])),
                         },
@@ -829,7 +829,7 @@ bot.on('callback_query', async (callbackQuery) => {
                     currProduct.push(`UPQ ${product.id}`);
                     productOptions.push(currProduct);
                 }
-                await bot.sendMessage(chatId, 'Please choose an option:', {
+                await bot.sendMessage(chatId, 'Select the product to update the quantity:', {
                     reply_markup: {
                         inline_keyboard: productOptions.map(([text, callback_data]) => ([{ text, callback_data }])),
                     },
