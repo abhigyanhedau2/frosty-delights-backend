@@ -40,7 +40,8 @@ const options = [
 const ownerOptions = [
     ['View Orders For Delivery', 'viewOrders'],
     ['View Orders For Pickup', 'viewOrdersForPickup'],
-    ['Add Product', 'addProduct']
+    ['Add Product', 'addProduct'],
+    ['Update Product Quantity', 'updateProductQuantity']
 ];
 
 let currTasks = [];
@@ -48,6 +49,7 @@ let newProduct = {};
 let newDeliveryPartner = {};
 let toBeDispatchedOrder;
 let currProductId;
+let productQuantityUpdateId;
 let currProduct;
 let user;
 
@@ -97,7 +99,8 @@ bot.on('message', async (message) => {
                 // else, send error message
                 else {
                     currTasks = [];
-                    await bot.sendMessage(chatId, 'Incorrect password.\n\n\nType /start to return');
+                    await bot.sendMessage(chatId, 'Incorrect password.');
+                    await sendHomeScreenOptions(chatId);
                 }
                 break;
 
@@ -108,7 +111,8 @@ bot.on('message', async (message) => {
                 if (!isValidLetters) {
                     currTasks = [];
                     newProduct = {};
-                    await bot.sendMessage(chatId, 'Invalid flavor name\n\n\nType /start to return');
+                    await bot.sendMessage(chatId, 'Invalid flavor name.');
+                    await sendHomeScreenOptions(chatId);
                 } else {
                     newProduct['name'] = productName;
                     currTasks.push('enterProductPrice');
@@ -123,7 +127,8 @@ bot.on('message', async (message) => {
                 if (!isValidNumber) {
                     currTasks = [];
                     newProduct = {};
-                    await bot.sendMessage(chatId, 'Invalid flavor price\n\n\nType /start to return');
+                    await bot.sendMessage(chatId, 'Invalid flavor price');
+                    await sendHomeScreenOptions(chatId);
                 } else {
                     newProduct['price'] = productPrice;
                     currTasks.push('enterProductQuantity');
@@ -137,7 +142,8 @@ bot.on('message', async (message) => {
                 if (!isValidQuantity) {
                     currTasks = [];
                     newProduct = {};
-                    await bot.sendMessage(chatId, 'Invalid flavor quantity\n\n\nType /start to return');
+                    await bot.sendMessage(chatId, 'Invalid flavor quantity');
+                    await sendHomeScreenOptions(chatId);
                 } else {
                     newProduct['quantity'] = productQuantity;
                     currTasks.push('enterProductWeight');
@@ -151,7 +157,8 @@ bot.on('message', async (message) => {
                 if (!isValidWeight) {
                     currTasks = [];
                     newProduct = {};
-                    await bot.sendMessage(chatId, 'Invalid flavor weight\n\n\nType /start to return');
+                    await bot.sendMessage(chatId, 'Invalid flavor weight');
+                    await sendHomeScreenOptions(chatId);
                 } else {
                     newProduct['weight'] = productWeight;
                     currTasks.push('enterProductBrand');
@@ -181,7 +188,8 @@ bot.on('message', async (message) => {
                 if (!isValidRequestedQuantity) {
                     currTasks = [];
                     newProduct = {};
-                    await bot.sendMessage(chatId, 'Invalid quantity requested.\n\n\nType /start to return');
+                    await bot.sendMessage(chatId, 'Invalid quantity requested.');
+                    await sendHomeScreenOptions(chatId);
                 } else if (+currProduct.quantity < +requestedQuantity) {
                     currTasks = [];
                     newProduct = {};
@@ -264,7 +272,7 @@ bot.on('message', async (message) => {
                 const finalOrder = await Purchase.findOne({ chatId }).populate('products.productId');
                 if (!finalOrder) {
                     await bot.sendMessage(chatId, 'Add some items before placing an order.');
-                    sendHomeScreenOptions(chatId);
+                    await sendHomeScreenOptions(chatId);
                 } else {
                     for (const productObj of finalOrder.products) {
                         orderStr += (`${productObj.productId.name} x ${productObj.quantity} - ${productObj.totalPrice} Rs.`);
@@ -297,6 +305,7 @@ bot.on('message', async (message) => {
                     newProduct = {};
                     newDeliveryPartner = {};
                     await bot.sendMessage(chatId, 'Enter a valid name');
+                    await sendHomeScreenOptions(chatId);
                 } else {
                     newDeliveryPartner['name'] = newDeliveryPartnerName;
                     currTasks.push('enterDeliveryPartnerCharges');
@@ -313,6 +322,7 @@ bot.on('message', async (message) => {
                     newProduct = {};
                     newDeliveryPartner = {};
                     await bot.sendMessage(chatId, 'Enter valid delivery charges per km (in number)');
+                    await sendHomeScreenOptions(chatId);
                 } else {
                     newDeliveryPartner['charges'] = deliveryCharge;
                     await User.create({
@@ -333,6 +343,7 @@ bot.on('message', async (message) => {
                     currTasks = [];
                     newProduct = {};
                     await bot.sendMessage(chatId, 'Enter a valid delivery distance (in km)');
+                    await sendHomeScreenOptions(chatId);
                 } else {
                     deliveryDistance = +deliveryDistance;
                     const deliveryPartners = await User.find({ role: 'deliveryPartner' }).sort({ charges: 1 });
@@ -353,8 +364,27 @@ bot.on('message', async (message) => {
                 }
                 break;
 
-            case '':
-
+            case 'productQuantityToUpdate':
+                const enteredProductQuantity = message.text;
+                const isValidProductQuantity = validator.isNumeric(enteredProductQuantity) && !validator.matches(enteredProductQuantity, /[^0-9]/g);
+                if (!isValidProductQuantity) {
+                    currTasks = [];
+                    newProduct = {};
+                    await bot.sendMessage(chatId, 'Enter a valid quantity to add (in number)');
+                    await sendHomeScreenOptions(chatId);
+                } else {
+                    const productToUpdate = await Product.findById(productQuantityUpdateId);
+                    await Product.findByIdAndUpdate(productQuantityUpdateId, { quantity: productToUpdate.quantity + (+enteredProductQuantity) });
+                    bot.sendMessage(chatId, `Product quantity updated successfully. ${productToUpdate.name} by ${productToUpdate.brand} - ${productToUpdate.quantity + (+enteredProductQuantity)} available`);
+                    bot.sendMessage(chatId, `Please choose an option`, {
+                        reply_markup: {
+                            inline_keyboard: ownerOptions.map(([text, callback_data]) => ([
+                                { text, callback_data }
+                            ])),
+                        },
+                    });
+                }
+                currTasks.pop();
                 break;
 
             default:
@@ -461,7 +491,6 @@ bot.on('callback_query', async (callbackQuery) => {
     else if (optionValue.split(' ')[0] === 'AOP') {
         let orderId = optionValue.split(' ')[1];
         toBeDispatchedOrder = await Order.findById(orderId).populate('products.productId');
-        console.log(toBeDispatchedOrder);
         const custChatId = toBeDispatchedOrder.chatId;
         let completeOrderStr = "";
         const productsObjArr = toBeDispatchedOrder.products;
@@ -557,6 +586,13 @@ bot.on('callback_query', async (callbackQuery) => {
 
     }
 
+    else if (optionValue.split(' ')[0] === 'UPQ') {
+        productQuantityUpdateId = optionValue.split(' ')[1];
+        const currProductQuantityToUpdate = await Product.findById(productQuantityUpdateId);
+        await bot.sendMessage(chatId, `Enter the number of ${currProductQuantityToUpdate.name} to add`);
+        currTasks.push(`productQuantityToUpdate`);
+    }
+
     else {
 
         switch (optionValue) {
@@ -610,7 +646,6 @@ bot.on('callback_query', async (callbackQuery) => {
                         currOrder = [];
                         currOrder.push(`Deline Order ${i + 1}`);
                         currOrder.push(`DODel ${orders[i].id}`);
-                        console.log(orders[i].products);
                         orderOptions.push(currOrder);
                         const productsObjArr = orders[i].products;
                         const totalItems = orders[i].totalItems;
@@ -783,6 +818,22 @@ bot.on('callback_query', async (callbackQuery) => {
                     });
                 }
 
+                break;
+
+            case 'updateProductQuantity':
+                const allProducts = await Product.find().sort({ price: 1 });
+                const productOptions = [];
+                for (const product of allProducts) {
+                    const currProduct = [];
+                    currProduct.push(`${product.name} by ${product.brand} - ${product.quantity} Remaining`);
+                    currProduct.push(`UPQ ${product.id}`);
+                    productOptions.push(currProduct);
+                }
+                await bot.sendMessage(chatId, 'Please choose an option:', {
+                    reply_markup: {
+                        inline_keyboard: productOptions.map(([text, callback_data]) => ([{ text, callback_data }])),
+                    },
+                });
                 break;
 
             case '':
