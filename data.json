@@ -1,0 +1,86 @@
+[
+    {
+        "name": "Vanilla",
+        "price": 100,
+        "quantity": 350,
+        "weight": 540,
+        "brand": "Havmor"
+    },
+    {
+        "name": "Chocolate",
+        "price": 290,
+        "quantity": 340,
+        "weight": 590,
+        "brand": "Vadilal"
+    },
+    {
+        "name": "Strawberry",
+        "price": 190,
+        "quantity": 250,
+        "weight": 630,
+        "brand": "Baskin Robbins"
+    },
+    {
+        "name": "Blueberry",
+        "price": 200,
+        "quantity": 400,
+        "weight": 450,
+        "brand": "Kwality Walls"
+    },
+    {
+        "name": "Butterscotch",
+        "price": 180,
+        "quantity": 310,
+        "weight": 480,
+        "brand": "Top N Town"
+    },
+    {
+        "name": "Cookies and Cream",
+        "price": 260,
+        "quantity": 200,
+        "weight": 690,
+        "brand": "Cream Bell"
+    },
+    {
+        "name": "Mint Chocolate Chip",
+        "price": 280,
+        "quantity": 380,
+        "weight": 440,
+        "brand": "Vadilal"
+    },
+    {
+        "name": "Buttered Pecan",
+        "price": 130,
+        "quantity": 300,
+        "weight": 560,
+        "brand": "Top N Town"
+    },
+    {
+        "name": "Green Pista",
+        "price": 230,
+        "quantity": 240,
+        "weight": 550,
+        "brand": "Baskin Robbins"
+    },
+    {
+        "name": "Kesar Pista",
+        "price": 120,
+        "quantity": 220,
+        "weight": 310,
+        "brand": "Vadilal"
+    },
+    {
+        "name": "Rajbhog",
+        "price": 110,
+        "quantity": 340,
+        "weight": 630,
+        "brand": "Havmor"
+    },
+    {
+        "name": "Chocolate Brownie",
+        "price": 240,
+        "quantity": 370,
+        "weight": 570,
+        "brand": "Amul"
+    }
+]

@@ -1,0 +1,23 @@
+// create an array of options for the dropdown list
+const options = [
+    ['Option 1', 'value1'],
+    ['Option 2', 'value2'],
+    ['Option 3', 'value3'],
+];
+
+// listen for incoming messages
+bot.on('message', (message) => {
+    // create a message with the dropdown list
+    bot.sendMessage(message.chat.id, 'Please choose an option:', {
+        reply_markup: {
+            inline_keyboard: [options.map(([text, callback_data]) => ({ text, callback_data }))],
+        },
+    });
+});
+
+// listen for callbacks from the dropdown list
+bot.on('callback_query', (callbackQuery) => {
+    const chatId = callbackQuery.message.chat.id;
+    const optionValue = callbackQuery.data;
+    bot.sendMessage(chatId, `You chose option ${optionValue}`);
+});
